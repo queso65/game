@@ -9,10 +9,14 @@ var dy = +2;
 var start = 0;
 var lose = 0;
 var back = new Image();
-var variant = 0;
-var block = document.getElementById('one'); 
 back.src = 'images/menu.jpg';
-function drawStartMenu() {
+var MOUSEDOWN=false;
+document.addEventListener("mousedown", mouseDown, false);
+function mouseDown(e){
+      MOUSEDOWN = true;
+}
+
+function StartMenu() {
 	ctx.beginPath();
 	ctx.drawImage(back, 0, 0, canvas.width, canvas.height);
     ctx.font = "50px Arial";
@@ -23,15 +27,16 @@ function drawStartMenu() {
     ctx.fillText("Или нажмите на экран чтобы играть мышкой", 20, 575);
 	ctx.closePath();
 }
-block.onclick = function(){
-	variant = 2;
-}
-
+  
 function draw(){
-	if(variant==0){
-		drawStartMenu();
+	if(!MOUSEDOWN){
+		StartMenu();
+	}
+	else{
+		ctx.clearRect(0,0,canvas.width,canvas.height);
 	}
 }
+
 
 
 function person(){
