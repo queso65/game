@@ -53,7 +53,7 @@ function mouseDownStart(e){
 }
 
 function keyDownStart(e){
-	if(e.keyCode == 42){
+	if(e.keyCode == 32){
         mousedown = true;
     }
 }
