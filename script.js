@@ -68,10 +68,10 @@ document.addEventListener("keydown",move, false);
 document.addEventListener("keyup",stopMove, false);
 document.addEventListener("mousemove", mouseMove, false);
 
-function mouseDown(e){
+
       mousedown = true;
 	  control = 1;
-}
+
 
 function mouseUp(e){
     mousedown = false;
