@@ -61,16 +61,17 @@ var boss = new Image();
 boss.src = 'images/boss.png';
 
 var mousedown=false;
+document.addEventListener("mousedown", mouseDown, false);
 document.addEventListener("mouseup", mouseUp, false);
 document.addEventListener("keydown",keyDownStart, false);
 document.addEventListener("keydown",move, false);
 document.addEventListener("keyup",stopMove, false);
 document.addEventListener("mousemove", mouseMove, false);
 
-
+function mouseDown(e){
       mousedown = true;
 	  control = 1;
-
+}
 
 function mouseUp(e){
     mousedown = false;
@@ -401,17 +402,6 @@ class Ship{
 	if(left){
 		if((this.x - this.dx) > 0)
 		this.x -= this.dx;
-	}
-	}
-	if(control==1){
-		if (mousedown){
-                if(clickX > indent + 134/2&& clickX < indent + canvas.width-134/2){
-                    this.x = clickX -indent-134/2;
-                }
-				 if(clickY >0 +134/2 && clickY < canvas.height - 134/2){
-                    this.y = clickY - 134/2;
-                }
-            }
 	}
 	}
 	drawShip(){
