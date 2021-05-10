@@ -404,6 +404,7 @@ class Ship{
 		this.x -= this.dx;
 	}
 	}
+	}
 	drawShip(){
 	    ctx.drawImage(spaceship, this.x, this.y, 134, 134);
 	}
