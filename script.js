@@ -61,7 +61,6 @@ var boss = new Image();
 boss.src = 'images/boss.png';
 
 var mousedown=false;
-document.addEventListener("mousedown", mouseDown, false);
 document.addEventListener("mouseup", mouseUp, false);
 document.addEventListener("keydown",keyDownStart, false);
 document.addEventListener("keydown",move, false);
