@@ -23,6 +23,7 @@ var s3 = 1;
 var s4 = 1; 
 var s5 = 0;
 var s6 = 0;
+var s7 = 0;
 var clickX =0;
 var clickY = 0;
 var control =0;
@@ -159,14 +160,17 @@ function Menu() {
     ctx.font = "50px Arial";
     ctx.fillStyle = "#ffffff";
     ctx.font = "40px Arial";
-    ctx.fillText("Нажмите  пробел чтобы играть с клавиатуры", 140, 60);
-	if(version == 1){
-	ctx.fillText("your best score: "+ bestScore, 350, 250);
-	ctx.fillText("your score: "+ scoreNow, 350, 325);
+	if(version==0){
+       ctx.fillText("Нажмите  пробел чтобы играть с клавиатуры", 140, 60);
+	   ctx.fillText("your best score: "+ bestScore, 350, 300);
+       ctx.fillText("Или нажмите на экран чтобы играть c телефона", 20, 575);
 	}
-	else
-		ctx.fillText("your best score: "+ bestScore, 350, 300);
-    ctx.fillText("Или нажмите на экран чтобы играть c телефона", 20, 575);
+	if(version == 1){
+	   ctx.fillText("Нажмите пробел чтобы выйти в меню", 10, 60);
+	   ctx.fillText("или кликните по экрану", 520, 110);
+	   ctx.fillText("your lose", 380, 250);
+	   ctx.fillText("your score: "+ scoreNow, 350, 325);
+	}
 	ctx.closePath();
 }
 
@@ -191,7 +195,7 @@ function drawHealth() {
 		openMenu = true;
 		ship.x = canvas.width/2 - 75;
 		ship.y = canvas.height - 140;
-		player.health= 100;
+		player.health= 5;
 		if(score > bestScore)
 			bestScore = score;
 		scoreNow = score;
@@ -204,6 +208,7 @@ function drawHealth() {
 		border = 1;
 		bossfightStart = 50;
 		bossfight = 0;
+		s2=800;
 		s6 = 0;
 		clean = 0;
 		bullets.splice(0, bullets.length);
@@ -416,7 +421,7 @@ class BulletEnemy {
 
 class Player{
 	constructor(){
-        this.health = 100;
+        this.health = 5;
 		this.shield = false;
     }
 	gethealth(){
@@ -484,11 +489,17 @@ function draw(){
 	if(!mousedown){
 		Menu();
 	}
-	if(mousedown && openMenu == true){
+	if(mousedown && openMenu == true ){
+		if(version == 1){
+			version = 0;
+			mousedown=false;
+		}
+		else{
 		ctx.clearRect(0,0,canvas.width,canvas.height);
 		openMenu = false;
+		}
 	}
-	if(openMenu == false){
+	if(openMenu == false ){
 		s1+=1;
 		s2+=1;
 		ctx.drawImage(space, 0, 0, canvas.width, canvas.height);
