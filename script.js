@@ -195,7 +195,7 @@ function drawHealth() {
 		openMenu = true;
 		ship.x = canvas.width/2 - 75;
 		ship.y = canvas.height - 140;
-		player.health= 5;
+		player.health= 100;
 		if(score > bestScore)
 			bestScore = score;
 		scoreNow = score;
@@ -421,7 +421,7 @@ class BulletEnemy {
 
 class Player{
 	constructor(){
-        this.health = 5;
+        this.health = 100;
 		this.shield = false;
     }
 	gethealth(){
