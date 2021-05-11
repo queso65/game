@@ -13,9 +13,9 @@ var k = 0;
 var start = 0;
 var lose = 0;
 var clean = 0;
-var bossfightStart = 100;
+var bossfightStart = 50;
 var s = 0;
-var border = -1;
+var border = 1;
 var border2 = 0;
 var s1 = 50;
 var s2 = 800;
@@ -59,18 +59,28 @@ var Shield = new Image();
 Shield .src = 'images/shield.png';
 var boss = new Image();
 boss.src = 'images/boss.png';
-
+if(screenlength < 1000)
+	indent = 0;
 var mousedown=false;
+
 document.addEventListener("mousedown", mouseDown, false);
 document.addEventListener("mouseup", mouseUp, false);
 document.addEventListener("keydown",keyDownStart, false);
 document.addEventListener("keydown",move, false);
 document.addEventListener("keyup",stopMove, false);
 document.addEventListener("mousemove", mouseMove, false);
+document.addEventListener("touchstart", touchTrue, false);
+document.addEventListener("touchmove", touchMove, false);
+document.addEventListener("touchcancel", touchFalse, false);
 
 function mouseDown(e){
+	if(control!=2){
       mousedown = true;
 	  control = 1;
+	  if(screenlength < 1000)
+	  indent = 0;
+      fire = true;
+	}
 }
 
 function mouseUp(e){
@@ -83,10 +93,21 @@ function mouseMove(e){
 }
 
 function keyDownStart(e){
-	if(e.keyCode == 32){
+	if(e.keyCode == 32 && control!=1){
 		control = 2;
         mousedown = true;
     }
+}
+
+function touchTrue(e){
+    mousedown = true;
+}
+function touchFalse(e){
+    mousedown = false;
+}
+function touchMove(e){
+    clickX = e.targetTouches[0].pageX;
+    clickY = e.targetTouches[0].pageY;
 }
 
 function move(e){
@@ -145,7 +166,7 @@ function Menu() {
 	}
 	else
 		ctx.fillText("your best score: "+ bestScore, 350, 300);
-    ctx.fillText("Или нажмите на экран чтобы играть мышкой", 20, 575);
+    ctx.fillText("Или нажмите на экран чтобы играть c телефона", 20, 575);
 	ctx.closePath();
 }
 
@@ -170,14 +191,27 @@ function drawHealth() {
 		openMenu = true;
 		ship.x = canvas.width/2 - 75;
 		ship.y = canvas.height - 140;
-		player.health=5;
+		player.health= 100;
 		if(score > bestScore)
 			bestScore = score;
 		scoreNow = score;
 		score = 0;
 		version = 1;
+		shield = false;
+		player.shield = false;
+		fire = false;
+		control = 0;
+		border = 1;
+		bossfightStart = 50;
+		bossfight = 0;
+		s6 = 0;
+		clean = 0;
 		bullets.splice(0, bullets.length);
-        obstacles.splice(0, obstacles.length);		
+        obstacles.splice(0, obstacles.length);
+		enemy.splice(0, enemy.length);
+		if( bossfight == 1){
+		   boooss.live = 0;
+		}		
 	}	
 }
 
@@ -209,7 +243,7 @@ class Obstacle{
 	this.x = getRandomInt(100, 900);
 	this.y = getRandomInt(-100,-50);
 	this.dx = getRandomFloat(-1.2, 1.2);
-	this.dy = getRandomFloat(1.8, 3);
+	this.dy = getRandomInt(3, 7);
 	obstacles.push(this);
 	}
 	draw(){
@@ -245,13 +279,15 @@ class Enemy{
 	this.live = 2;
 	this.x = getRandomInt(100, 900);
 	this.y = getRandomInt(-50,-100);
-	this.dx = getRandomFloat(2, 4);
+	this.dx = getRandomInt(3, 8);
 	this.dy = getRandomInt(1.8, 3);
 	this.quantity = getRandomInt(0, 4);
 	this.route = getRandomInt(0, 2);
 	this.j;
 	this.s=0;
 	this.border = piece * this.quantity;
+	if(control==1)
+		this.live=4;
 	enemy.push(this);
 	}
 	drawUFO(){
@@ -260,7 +296,16 @@ class Enemy{
 				this.y = this.border;
 			if(this.y + this.dy < this.border)
 				this.y += this.dy;
-			
+			if(this.route == 0){
+			    this.x += this.dx;
+				if(this.x > 850)
+					this.route = 1;
+			}
+			if(this.route == 1){
+			    this.x -= this.dx;
+				if(this.x <= 0)
+					this.route = 0;
+			}
 	    ctx.drawImage(UFO, this.x , this.y , 150, 150);	
 		}
 		for(let i = 0; i < bullets.length; i++){ 
@@ -287,10 +332,10 @@ class Enemy{
 
 class Boss{
 	constructor(){
-	this.live = 2;
+	this.live = 10;
 	this.x = canvas.width/2-230;
 	this.y = getRandomInt(-50,-100);
-	this.dx = 7;
+	this.dx = 5;
 	this.dy = 1;
 	this.route = getRandomInt(0, 2);
 	this.border = 100;
@@ -299,11 +344,17 @@ class Boss{
 	}
 	drawBoss(){
 		if(this.live != 0){
-			if(this.border - this.y < this.dy)
-				this.y = this.border;
 			if(this.y < this.border)
 				this.y += this.dy;
-			if(score > 10){
+			if(this.route == 0){
+			    this.x += this.dx;
+				if(this.x+460 >= 1000)
+					this.route = 1;
+			}
+			if(this.route == 1){
+			    this.x -= this.dx;
+				if(this.x <= 0)
+					this.route = 0;
 			}
 	    ctx.drawImage(boss, this.x , this.y , 460, 200);	
 		}
@@ -315,7 +366,7 @@ class Boss{
 				bullets[i].hit=0;
 			}
 		}
-		if(this.s == 0 && this.y >= this.border&& this.live!=0){
+		if(this.s == 0 && this.y >= this.border){
 		    this.j[0] = new BulletEnemy(this.x-20 ,this.y + 30,1);
 			this.j[1] = new BulletEnemy(this.x+140 ,this.y + 100,1);
 			this.j[2] = new BulletEnemy(this.x+300 ,this.y + 100,1);
@@ -336,15 +387,17 @@ class Boss{
 class BulletEnemy {
     constructor(a,b,c){
 	  this.boss = c;
-	  this.hit = 1;
 	  this.bulletWidth = 35;
       this.bulletHeight = 65;
 	  this.hit = 1;
       this.x = a;
+	  this.dy = 10;
       this.y = b+10;
+	  if(control==2)
+		  this.dy=6;
     }
    drawBulletUFO(){
-      this.y+=2;
+      this.y += this.dy;
 	  if(this.hit == 1)
       ctx.drawImage(laser2,this.x + 64, this.y, this.bulletWidth, this.bulletHeight);
    }
@@ -363,7 +416,7 @@ class BulletEnemy {
 
 class Player{
 	constructor(){
-        this.health = 5000;
+        this.health = 100;
 		this.shield = false;
     }
 	gethealth(){
@@ -371,11 +424,11 @@ class Player{
 	}
 	hit(){
 		if(this.shield === false)
-		 this.health -= 5;
+		 this.health -= 8;
 	}
 	hitEnemyBullet(){
 		if(this.shield === false)
-		 this.health -= 2;
+		 this.health -= 5;
 	}
 }
 player = new Player();
@@ -403,6 +456,16 @@ class Ship{
 		if((this.x - this.dx) > 0)
 		this.x -= this.dx;
 	}
+	}
+	if(control==1 && score>0){
+		if (mousedown){
+                if(clickX > indent + 134/2&& clickX < indent + canvas.width-134/2){
+                    this.x = clickX -indent-134/2;
+                }
+				 if(clickY >0 +134/2 && clickY < canvas.height - 134/2){
+                    this.y = clickY - 134/2;
+                }
+            }
 	}
 	}
 	drawShip(){
@@ -444,11 +507,11 @@ function draw(){
 		}
 		if(bossfight==0 && score > border){
 		if( s2 > 800 && s4 == 1) {
-		   k = getRandomInt(1,4);
+		   k = getRandomInt(1,5);
 		   for(let i = 0 ;i < k; i++){
                 new Enemy();
 		   }
-		   k = getRandomInt(1,5);
+		   k = getRandomInt(3,9);
 		   for(let i = 0 ;i < k; i++){
                new Obstacle();
 		   }
@@ -488,16 +551,15 @@ function draw(){
 		       enemy.splice(0, enemy.length);
 			   clean = 1;
 		   }
-		if(boooss.live == 0){
-			border=score+5;
+		if(boooss.live == 0 && boooss.s == 0 ){
+			border = score + 1;
 			bossfight = 0;
-			bossfightStart=score + 100;
-			s6=0;
-			clean=0;
+			bossfightStart = score + 50;
+			s6 = 0;
+			clean = 0;
 	   }
 	}
 }
 }
-
 
 setInterval(draw, 10);
